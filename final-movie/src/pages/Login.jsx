@@ -5,7 +5,7 @@ import "./login.css";
 import { useHistory } from "react-router-dom";
 import axios from "axios";
 const Login = () => {
-    let [dataLogin,setDataLogin]=useState({});
+    let [dataLogin, setDataLogin] = useState({});
     let history = useHistory();
     function login() {
         localStorage.setItem("token", true);
@@ -17,38 +17,81 @@ const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [mess, setMess] = useState("");
+
+    const [emailS, setEmailS] = useState("");
+    const [passwordS, setPasswordS] = useState("");
+    const [repasswordS, setRepasswordS] = useState("")
+    const [messS, setMessS] = useState("");
+
     function EmailChange(e) {
         setEmail(e.target.value);
     }
     function PasswordChange(e) {
         setPassword(e.target.value);
     }
+
+    function EmailSChange(e) {
+        setEmailS(e.target.value);
+    }
+    function PasswordSChange(e) {
+        setPasswordS(e.target.value);
+    }
+    function RepasswordSChange(e) {
+        setRepasswordS(e.target.value);
+    }
     function handleSubmitLogin(e) {
         e.preventDefault();
         //chay doan code nay neu chua viet api spring boot
-        if (email == "admin" && password == "admin") {
-            login();
-        } else {
-            setMess("Email or password is incorrect");
-        }
-        // let data={};
-        //neu viet api roi thi chay doan code nay
-    //    axios.post("http://localhost:8081/api/login/signin", {
-    //         email: email,
-    //         password: password,
-    //     }).then((res) => {
-    //         data = res.data;
-    //         if (data.status==false) {
-    //             console.log(data.message);
-    //             setMess(data.message);
-    //         } else {
-    //             login();
-    //         }
-    //     }).catch((err) => {
-    //         console.log(err);
-    //     })
-
+        // if (email == "thanhvu123@gmail.com" && password == "thanhvu") {
+        //     login();
+        // } else {
+        //     setMess("Email or password is incorrect");
+        // }
+        let data={};
         
+        axios.post("http://localhost:8081/api/login/signin", {
+            email: email,
+            password: password,
+        }).then((res) => {
+            data = res.data;
+            if (data.status == false) {
+                console.log(data.message);
+                setMess(data.message);
+            } else {
+                login();
+            }
+        }).catch((err) => {
+            console.log(err);
+        })
+
+    }
+
+    function handleSubmitSignup(e) {
+        e.preventDefault();
+        let data={}
+        console.log(passwordS)
+        console.log(repasswordS)
+        if(passwordS != repasswordS){
+            setMessS("Password and repassword is not match");
+        }
+        else{
+            axios.post("http://localhost:8081/api/login/signup", {
+                email: emailS,
+                password: passwordS,
+            }).then((res) => {
+                data = res.data;
+                console.log(data);
+                if (data == "Email is already exits") {
+                    // console.log(data.message);
+                    setMessS("Email is already exits");
+                } else {
+                    login();
+                }
+            }).catch((err) => {
+                console.log(err);
+            })
+        }
+      
     }
 
     return (
@@ -103,8 +146,8 @@ const Login = () => {
                                             <div className="center-wrap">
                                                 <div className="section text-center">
                                                     <h4 className="mb-4 pb-3 text-white">Sign Up</h4>
-                                                    <form id="formSignup" action="ValidateServlet?action=signup"
-                                                        method="post">
+                                                    <form id="formSignup" onSubmit={handleSubmitSignup}
+                                                    >
                                                         {/* <div className="form-group">
                                                             <input type="text" name="username" className="form-style"
                                                                 placeholder="Your Full Name" id="logname"
@@ -112,23 +155,23 @@ const Login = () => {
                                                                     className="input-icon uil uil-user"></i>
                                                         </div>  */}
                                                         <div className="form-group">
-                                                            <input type="email" name="emailS" className="form-style"
+                                                            <input onChange={EmailSChange} type="email" name="emailS" className="form-style"
                                                                 placeholder="Your Email" id="logemail" autocomplete="off" />
                                                             <i className="input-icon uil uil-at"></i>
                                                         </div>
                                                         <div className="form-group mt-2">
-                                                            <input type="password" name="passwordS" className="form-style"
+                                                            <input onChange={PasswordSChange} type="password" name="passwordS" className="form-style"
                                                                 placeholder="Password" id="logpass" autocomplete="off" />
                                                             <i className="input-icon uil uil-lock-alt"></i>
                                                         </div>
                                                         <div className="form-group mt-2">
-                                                            <input type="password" name="re_passS" className="form-style"
+                                                            <input onChange={RepasswordSChange} type="password" name="re_passS" className="form-style"
                                                                 placeholder="Re-Password" id="logrepass"
                                                                 autocomplete="off" /> <i
                                                                     className="input-icon uil uil-lock-alt"></i>
                                                         </div>
                                                         {/* <h4 className="messS text-center text-danger">${messS}</h4> */}
-                                                        <h4 className="messS text-center text-danger"></h4>
+                                                        <h4 className="messS text-center text-danger">{messS}</h4>
                                                         <input style={{ color: "white;" }} name="signup" type="submit"
                                                             value="Signup" className="btn mt-4" />
                                                     </form>
